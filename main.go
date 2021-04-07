@@ -1,9 +1,9 @@
 package main
 
 import (
-    godist "github.com/verginer/godist/src"
+	godist "github.com/verginer/godist/src"
 	"log"
-    "os"
+	"os"
 )
 
 func main() {

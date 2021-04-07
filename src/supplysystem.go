@@ -1,10 +1,10 @@
 package godist
 
 import (
-    "fmt"
-    "github.com/schollz/progressbar/v3"
-    "log"
-    "time"
+	"fmt"
+	"github.com/schollz/progressbar/v3"
+	"log"
+	"time"
 )
 
 type SupplySystem struct {
@@ -54,8 +54,6 @@ func (s *SupplySystem) ExtractTraces() map[string]int {
 
 	return allTraces
 }
-
-
 
 func ReplayTransactionsFromFile(transactionsPath string) *SupplySystem {
 	supSystem := NewSupplySystem()

@@ -5,22 +5,21 @@ import (
 	"io"
 	"log"
 	"os"
-    "sort"
-    "strconv"
-    "time"
+	"sort"
+	"strconv"
+	"time"
 )
 
 type Transaction struct {
-    sendingID    string
-    sendingAct   string
-    receivingID  string
-    receivingAct string
-    date         time.Time
-    quantity     int
+	sendingID    string
+	sendingAct   string
+	receivingID  string
+	receivingAct string
+	date         time.Time
+	quantity     int
 }
 
 type TransactionsCollection []Transaction
-
 
 // Implement the interface to use sort.Sort
 func (t TransactionsCollection) Len() int {
@@ -75,7 +74,7 @@ func LoadTransactionsFromCSV(transactionsPath string, sortByDate bool) Transacti
 		}
 	}
 	if sortByDate {
-        sort.Sort(transactions)
-    }
+		sort.Sort(transactions)
+	}
 	return transactions
 }
