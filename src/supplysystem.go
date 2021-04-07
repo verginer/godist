@@ -2,7 +2,6 @@ package godist
 
 import (
 	"fmt"
-	"github.com/schollz/progressbar/v3"
 	"log"
 	"time"
 )
@@ -57,22 +56,22 @@ func (s *SupplySystem) ExtractTraces() map[string]int {
 
 func ReplayTransactionsFromFile(transactionsPath string) *SupplySystem {
 	supSystem := NewSupplySystem()
-	nTransactions, err := lineCounter(transactionsPath)
+	//nTransactions, err := lineCounter(transactionsPath)
 
-	if err != nil {
-		log.Fatal(err)
-	}
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
 
 	transactions := LoadTransactionsFromCSV(transactionsPath, true)
 
-	pBar := progressbar.Default(int64(nTransactions))
+	//pBar := progressbar.Default(int64(nTransactions))
 	log.Println("Replaying TransactionsCollection")
 	for _, t := range transactions {
 		err := supSystem.ShipStock(t.sendingID, t.sendingAct, t.receivingID, t.receivingAct, t.quantity, t.date)
 		if err != nil {
 			log.Fatal(err)
 		}
-		_ = pBar.Add(1)
+		//_ = pBar.Add(1)
 	}
 	return supSystem
 }
