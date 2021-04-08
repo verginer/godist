@@ -65,5 +65,5 @@ func WriteTracesToJson(traces map[string]int, outputPath string) {
 	defer jsonFile.Close()
 	jsonFile.Write(jsonData)
 	jsonFile.Close()
-	log.Println("Json writte to: ", outputPath)
+	log.Println("Json written to: ", outputPath)
 }

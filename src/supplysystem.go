@@ -28,19 +28,20 @@ func (s *SupplySystem) GetDistributor(deaId, deaAct string) *Distributor {
 	return focalDistributor
 }
 
-func (s *SupplySystem) ShipStock(sourceId, sourceAct, targetId, targetAct string, quantity int, date time.Time) error {
-	if date.Before(s.currentDate) {
+//func (s *SupplySystem) ShipStock(sourceId, sourceAct, targetId, targetAct string, quantity int, date time.Time) error {
+func (s *SupplySystem) ShipStock(t Transaction) error {
+	if t.date.Before(s.currentDate) {
 		return fmt.Errorf(
 			"transaction from %s to %s on %s happened before current date %s",
-			sourceId, targetId, date, s.currentDate,
+			t.sendingId, t.receivingId, t.date, s.currentDate,
 		)
 	}
 
-	s.currentDate = date
-	sendingDistributor := s.GetDistributor(sourceId, sourceAct)
-	receivingDistributor := s.GetDistributor(targetId, targetAct)
+	s.currentDate = t.date
+	sendingDistributor := s.GetDistributor(t.sendingId, t.sendingAct)
+	receivingDistributor := s.GetDistributor(t.receivingId, t.receivingAct)
 
-	packages := sendingDistributor.preparePackages(quantity, receivingDistributor.deaID, date)
+	packages := sendingDistributor.preparePackages(t.quantity, receivingDistributor.deaID, t.date)
 	receivingDistributor.addPackages(packages)
 	return nil
 }
@@ -50,28 +51,36 @@ func (s *SupplySystem) ExtractTraces() map[string]int {
 	for _, dist := range s.distributors {
 		dist.extractTraces(allTraces)
 	}
-
 	return allTraces
+}
+
+func (s *SupplySystem) TotalInStock() int {
+    var totSock int
+    for _, dist := range s.distributors {
+        totSock += dist.TotalStock()
+    }
+    return totSock
+}
+
+func (s *SupplySystem) TotalManufactured() int {
+    var totManuf int
+    for _, dist := range s.distributors {
+        totManuf += dist.manufactured
+    }
+    return totManuf
 }
 
 func ReplayTransactionsFromFile(transactionsPath string) *SupplySystem {
 	supSystem := NewSupplySystem()
-	//nTransactions, err := lineCounter(transactionsPath)
 
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
+	transactions := LoadTransactionsFromCSV(transactionsPath)
 
-	transactions := LoadTransactionsFromCSV(transactionsPath, true)
-
-	//pBar := progressbar.Default(int64(nTransactions))
 	log.Println("Replaying TransactionsCollection")
 	for _, t := range transactions {
-		err := supSystem.ShipStock(t.sendingID, t.sendingAct, t.receivingID, t.receivingAct, t.quantity, t.date)
+		err := supSystem.ShipStock(t)
 		if err != nil {
 			log.Fatal(err)
-		}
-		//_ = pBar.Add(1)
+}
 	}
 	return supSystem
 }

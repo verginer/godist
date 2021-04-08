@@ -7,13 +7,14 @@ import (
 	"os"
 	"sort"
 	"strconv"
-	"time"
+    "strings"
+    "time"
 )
 
 type Transaction struct {
-	sendingID    string
+	sendingId    string
 	sendingAct   string
-	receivingID  string
+	receivingId  string
 	receivingAct string
 	date         time.Time
 	quantity     int
@@ -34,7 +35,7 @@ func (t TransactionsCollection) Swap(i, j int) {
 	t[i], t[j] = t[j], t[i]
 }
 
-func LoadTransactionsFromCSV(transactionsPath string, sortByDate bool) TransactionsCollection {
+func LoadTransactionsFromCSV(transactionsPath string) TransactionsCollection {
 	nTransactions, _ := lineCounter(transactionsPath)
 	transactions := make(TransactionsCollection, nTransactions)
 
@@ -57,7 +58,9 @@ func LoadTransactionsFromCSV(transactionsPath string, sortByDate bool) Transacti
 			log.Fatal(err)
 		}
 
-		quantity, err := strconv.ParseFloat(record[24], 64)
+		quantityString := record[24]
+		quantityString = strings.Split(quantityString, ".")[0]
+		quantity, err := strconv.ParseInt(quantityString, 10, 64)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -65,16 +68,16 @@ func LoadTransactionsFromCSV(transactionsPath string, sortByDate bool) Transacti
 		date := NewTransactionDate(record[30])
 
 		transactions[i] = Transaction{
-			sendingID:    record[0],
+			sendingId:    record[0],
 			sendingAct:   record[1],
-			receivingID:  record[10],
+			receivingId:  record[10],
 			receivingAct: record[11],
 			date:         date,
 			quantity:     int(quantity),
 		}
 	}
-	if sortByDate {
-		sort.Sort(transactions)
-	}
+
+	sort.Sort(transactions)
+
 	return transactions
 }

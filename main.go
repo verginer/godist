@@ -10,7 +10,16 @@ import (
 
 func worker(pathToTransactions, pathToJson string) {
 	supplySystem := godist.ReplayTransactionsFromFile(pathToTransactions)
+
+	totalInStock := supplySystem.TotalInStock()
+	totalManufactured := supplySystem.TotalManufactured()
+	if totalInStock != totalManufactured {
+	    log.Fatal("The quantity manufactured is not equal to the quantity in stock. This cannot be.")
+    } else {
+        log.Printf("A total of %d pills were manufactured and shipped.", totalManufactured)
+    }
 	traces := supplySystem.ExtractTraces()
+	log.Printf("Extracted %d traces", len(traces))
 	godist.WriteTracesToJson(traces, pathToJson)
 }
 

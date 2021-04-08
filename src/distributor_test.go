@@ -10,8 +10,8 @@ func TestDistributor_AddPackage(t *testing.T) {
 	myDist := NewDistributor("M0", "M")
 	myPack1 := NewPackage(10, "M1", "D1", startDate)
 	myPack2 := NewPackage(5, "M1", "D2", startDate)
-	myDist.addPackage(myPack1)
-	myDist.addPackage(myPack2)
+	myDist.addPackages([]*Package{myPack1})
+	myDist.addPackages([]*Package{myPack2})
 	assert.Equal(t, 2, len(myDist.store))
 	assert.Equal(t, 15, myDist.TotalStock())
 }
