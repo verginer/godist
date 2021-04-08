@@ -3,6 +3,6 @@ module github.com/verginer/godist
 go 1.16
 
 require (
-	github.com/schollz/progressbar/v3 v3.7.6
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/stretchr/testify v1.7.0
 )
