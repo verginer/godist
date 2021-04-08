@@ -1,15 +1,23 @@
 package godist
 
-import "time"
+import (
+	"fmt"
+	"strings"
+	"time"
+)
 
-// Trace represents the sequence of locations the package has passed through
-type Trace struct {
-	sequence []string
+// PackageTrace represents the sequence of locations the package has passed through
+type PackageTrace []string
+
+func (t PackageTrace) String() string {
+	return strings.Join(t, "|")
 }
 
-func (t *Trace) Extend(nextID string) Trace {
-	newSequence := append(t.sequence, nextID)
-	return Trace{newSequence}
+func (t PackageTrace) Extend(nextID string) PackageTrace {
+    newSequence := make(PackageTrace, len(t), len(t)+1)
+    copy(newSequence, t)
+	newSequence = append(newSequence, nextID)
+	return newSequence
 }
 
 // Package is the container which is used to transport the pills
@@ -17,13 +25,13 @@ type Package struct {
 	quantity         int
 	parent           *Package
 	originalQuantity int
-	trace            Trace
+	trace            PackageTrace
 	depleted         bool
 	packagedDate     time.Time
 }
 
 func NewPackage(quantity int, deaId string, customerId string, date time.Time) *Package {
-	trace := Trace{sequence: []string{deaId, customerId}}
+	trace := PackageTrace{deaId, customerId}
 	return &Package{
 		quantity:         quantity,
 		parent:           nil,
@@ -46,24 +54,24 @@ func DerivePackage(quantity int, parent *Package, destinationDeaID string, date 
 	}
 }
 
-// Quantity gets the read only quantity value
+// Quantity gets the read only Quantity value
 func (p *Package) Quantity() int {
 	return p.quantity
 }
 
-// SetQuantity sets the quantity to the given value
+// SetQuantity sets the Quantity to the given value
 func (p *Package) SetQuantity(newQuantity int) {
 	p.quantity = newQuantity
 }
 
-// Take creates a new package with the given quantity if available
-// the residual quantity otherwise.
+// Take creates a new package with the given Quantity if available
+// the residual Quantity otherwise.
 // Trying to take a package from a depleted package will result in a panic
 func (p *Package) Take(quantity int, destinationDea string, date time.Time) (*Package, bool) {
 	var takenQuantity int
 	var satisfied bool
 
-	if p.depleted {
+	if p.depleted || ( p.quantity < 0) {
 		panic(1)
 	}
 
@@ -96,4 +104,9 @@ func (p *Package) iterativeAncestors(children []*Package) []*Package {
 	} else {
 		return append(children, p)
 	}
+}
+
+func (p *Package) String() string {
+	repr := fmt.Sprintf("P(%s, q=%d)", p.trace, p.quantity)
+	return repr
 }

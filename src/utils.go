@@ -2,19 +2,15 @@ package godist
 
 import (
 	"bytes"
-	"encoding/json"
 	"io"
 	"log"
 	"os"
 	"time"
 )
 
-const (
-	dateFormat = "01022006"
-)
 
-// NewTransactionDate returns a time.Time object created from a string in the format MMDDYY
-func NewTransactionDate(date string) time.Time {
+// NewTransactionDate returns a time.Time object created from a string
+func NewTransactionDate(date, dateFormat string) time.Time {
 	t, err := time.Parse(dateFormat, date)
 	if err != nil {
 		log.Fatal(err)
@@ -48,22 +44,4 @@ func lineCounter(path string) (int, error) {
 			return count, err
 		}
 	}
-}
-
-// WriteTracesToJson writes
-func WriteTracesToJson(traces map[string]int, outputPath string) {
-	jsonData, err := json.Marshal(traces)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	jsonFile, err := os.Create(outputPath)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer jsonFile.Close()
-	jsonFile.Write(jsonData)
-	jsonFile.Close()
-	log.Println("Json written to: ", outputPath)
 }

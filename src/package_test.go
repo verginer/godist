@@ -6,8 +6,10 @@ import (
 )
 import "github.com/stretchr/testify/assert"
 
+
+
 func CreatePackageWithTrace(depth int) *Package {
-	startDate := NewTransactionDate("01012012")
+	startDate := NewTransactionDate("01012012", DateFormat)
 	var myPack = NewPackage(10, "M1", "D0", startDate)
 
 	takenPackage, _ := myPack.Take(5, "D1", startDate)
@@ -20,7 +22,7 @@ func CreatePackageWithTrace(depth int) *Package {
 }
 
 func TestPackage_Take(t *testing.T) {
-	startDate := NewTransactionDate("01012012")
+	startDate := NewTransactionDate("01012012", DateFormat)
 	var myPack = NewPackage(30, "M1", "D0", startDate)
 	takenPackage, complete := myPack.Take(15, "D1", startDate)
 	assert.Equal(t, complete, true)
@@ -31,7 +33,7 @@ func TestPackage_Take(t *testing.T) {
 }
 
 func TestPackage_Ancestors(t *testing.T) {
-	startDate := NewTransactionDate("01012021")
+	startDate := NewTransactionDate("01012021", DateFormat)
 	var myPack = NewPackage(10, "M1", "D0", startDate)
 
 	takenPackage, _ := myPack.Take(5, "D1", startDate)
@@ -50,7 +52,7 @@ func TestPackage_Ancestors(t *testing.T) {
 }
 
 func TestPackage_Depleted(t *testing.T) {
-	startDate := NewTransactionDate("01012021")
+	startDate := NewTransactionDate("01012021", DateFormat)
 	var myPack = NewPackage(10, "M1", "D0", startDate)
 
 	takenPackage, satisfied := myPack.Take(20, "D0", startDate)

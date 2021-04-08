@@ -1,8 +1,10 @@
 package godist
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"time"
 )
 
@@ -28,11 +30,11 @@ func (s *SupplySystem) GetDistributor(deaId, deaAct string) *Distributor {
 	return focalDistributor
 }
 
-//func (s *SupplySystem) ShipStock(sourceId, sourceAct, targetId, targetAct string, quantity int, date time.Time) error {
+//func (s *SupplySystem) ShipStock(sourceId, sourceAct, targetId, targetAct string, Quantity int, Date time.Time) error {
 func (s *SupplySystem) ShipStock(t Transaction) error {
 	if t.date.Before(s.currentDate) {
 		return fmt.Errorf(
-			"transaction from %s to %s on %s happened before current date %s",
+			"transaction from %s to %s on %s happened before current Date %s",
 			t.sendingId, t.receivingId, t.date, s.currentDate,
 		)
 	}
@@ -46,41 +48,62 @@ func (s *SupplySystem) ShipStock(t Transaction) error {
 	return nil
 }
 
-func (s *SupplySystem) ExtractTraces() map[string]int {
-	allTraces := make(map[string]int)
+type AggregateTrace map[string]int
+
+func (a AggregateTrace) Sum() int {
+	total := 0
+	for _, q := range a {
+		total += q
+	}
+	return total
+}
+
+func (a AggregateTrace) ToJson(path string) {
+	jsonData, err := json.Marshal(a)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	jsonFile, err := os.Create(path)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer jsonFile.Close()
+
+	jsonFile.Write(jsonData)
+	jsonFile.Close()
+}
+
+func (s *SupplySystem) ExtractTraces() AggregateTrace {
+	allTraces := make(AggregateTrace)
 	for _, dist := range s.distributors {
-		dist.extractTraces(allTraces)
+		dist.ExtractTraces(allTraces)
 	}
 	return allTraces
 }
 
 func (s *SupplySystem) TotalInStock() int {
-    var totSock int
-    for _, dist := range s.distributors {
-        totSock += dist.TotalStock()
-    }
-    return totSock
+	var totSock int
+	for _, dist := range s.distributors {
+		totSock += dist.TotalStock()
+	}
+	return totSock
 }
 
 func (s *SupplySystem) TotalManufactured() int {
-    var totManuf int
-    for _, dist := range s.distributors {
-        totManuf += dist.manufactured
-    }
-    return totManuf
+	var total int
+	for _, dist := range s.distributors {
+		total += dist.manufactured
+	}
+	return total
 }
 
-func ReplayTransactionsFromFile(transactionsPath string) *SupplySystem {
-	supSystem := NewSupplySystem()
-
-	transactions := LoadTransactionsFromCSV(transactionsPath)
-
-	log.Println("Replaying TransactionsCollection")
+func (s *SupplySystem) ReplayTransactions(transactions TransactionsCollection) {
 	for _, t := range transactions {
-		err := supSystem.ShipStock(t)
+		err := s.ShipStock(t)
 		if err != nil {
 			log.Fatal(err)
-}
+		}
 	}
-	return supSystem
 }

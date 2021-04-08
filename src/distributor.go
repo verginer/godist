@@ -1,8 +1,7 @@
 package godist
 
 import (
-    "log"
-    "strings"
+	"log"
 	"time"
 )
 
@@ -22,7 +21,7 @@ func (d *Distributor) addPackages(packs []*Package) {
 }
 
 func (d *Distributor) removeDepletedPackages() {
-    var newStore []*Package
+	var newStore []*Package
 
 	for _, pack := range d.store {
 		if !pack.depleted {
@@ -53,8 +52,8 @@ func (d *Distributor) preparePackages(requestedQuantity int, customerId string, 
 		residualDemand -= preparedPackage.quantity
 		packages = append(packages, preparedPackage)
 		if residualDemand < 0 {
-		    log.Fatal("The residual demand is negative")
-        }
+			log.Fatal("The residual demand is negative")
+		}
 		if residualDemand == 0 {
 			break
 		}
@@ -72,9 +71,17 @@ func (d *Distributor) preparePackages(requestedQuantity int, customerId string, 
 	return packages
 }
 
-func (d *Distributor) extractTraces(traceCount map[string]int) {
+func (d *Distributor) ExtractTraces(traceCount AggregateTrace) {
 	for _, pack := range d.store {
-		traceKey := strings.Join(pack.trace.sequence, "|")
+		traceKey := pack.trace.String()
 		traceCount[traceKey] += pack.quantity
 	}
+}
+
+
+func (d *Distributor) ExtractAncestorTraces(traceCount AggregateTrace) {
+    for _, pack := range d.store {
+        traceKey := pack.trace.String()
+        traceCount[traceKey] += pack.quantity
+    }
 }
