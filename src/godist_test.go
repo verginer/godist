@@ -7,7 +7,7 @@ import (
 
 func TestReplay(t *testing.T) {
 
-	//info := TransactionCSVInfo{
+	//csvInfo := TransactionCSVInfo{
 	//	SendingId:    0,
 	//	SendingAct:   0,
 	//	ReceivingId:  1,
@@ -15,32 +15,36 @@ func TestReplay(t *testing.T) {
 	//	Date:         3,
 	//	Quantity:     2,
 	//	DateFormat:   "01022006",
+	//	Separator: ',',
 	//}
 
-    //info := TransactionCSVInfo{
-    //    SendingId:    0,
-    //    SendingAct:   1,
-    //    ReceivingId:  2,
-    //    ReceivingAct: 3,
-    //    Date:         5,
-    //    Quantity:     4,
-    //    DateFormat:   "2006-01-02",
+    //csvInfo := TransactionCSVInfo{
+    //   SendingId:    0,
+    //   SendingAct:   1,
+    //   ReceivingId:  2,
+    //   ReceivingAct: 3,
+    //   Date:         5,
+    //   Quantity:     4,
+    //   DateFormat:   "2006-01-02",
     //}
 
 
     csvInfo := TransactionCSVInfo{
-    	SendingId:    0,
-    	SendingAct:   1,
-    	ReceivingId:  10,
-    	ReceivingAct: 11,
-    	Date:         30,
-    	Quantity:     24,
-    	Separator:    ',',
+        SendingId:    0,
+        SendingAct:   1,
+        ReceivingId:  10,
+        ReceivingAct: 11,
+        Quantity:     24,
+        Date:         30,
+        DateFormat:   "01022006",
+        Separator:    '\t',
     }
 
 
-    testDatPath := "/Users/lucaverginer/Downloads/presorted_transactions_example.csv"
+    //testDatPath := "/Users/lucaverginer/Downloads/presorted_transactions_example.csv"
 	//testDatPath := "/Users/lucaverginer/Downloads/random_transactions.csv"
+    //testDatPath := "./testdata/synth_transactions.tsv"
+    testDatPath := "../input2/004091255"
 	opioidTransactions := LoadTransactionsFromCSV(testDatPath, csvInfo)
 
 	distSystem := NewSupplySystem()

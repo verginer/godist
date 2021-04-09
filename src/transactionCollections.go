@@ -28,12 +28,32 @@ func (t TransactionsCollection) Len() int {
 }
 
 func (t TransactionsCollection) Less(i, j int) bool {
-	return t[i].date.Before(t[j].date)
+    if t[i].date.Before(t[j].date) {
+        return true
+    } else if t[i].date.After(t[j].date) {
+        return false
+    }
+    // Otherwise the dates are equal
+
+    if t[i].sendingId < t[j].sendingId {
+        return true
+    } else if  t[i].sendingId > t[j].sendingId {
+        return false
+    }
+    // Otherwise they are equal
+
+    return t[i].receivingId < t[j].receivingId
 }
+
+
+//func (t TransactionsCollection) Less(i, j int) bool {
+//	return t[i].date.Before(t[j].date)
+//}
 
 func (t TransactionsCollection) Swap(i, j int) {
 	t[i], t[j] = t[j], t[i]
 }
+
 
 type TransactionCSVInfo struct {
 	SendingId    int

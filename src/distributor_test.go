@@ -28,8 +28,8 @@ func TestDistributor_PreparePackages(t *testing.T) {
 	myDist1 := NewDistributor("D1", "D")
 	myDist2 := NewDistributor("D2", "D")
 
-	preparedPackages1 := myMan.preparePackages(10, myDist1.deaID, startDate)
-	preparedPackages2 := myMan.preparePackages(15, myDist2.deaID, startDate)
+	preparedPackages1 := myMan.preparePackages(10, myDist1.deaId, startDate)
+	preparedPackages2 := myMan.preparePackages(15, myDist2.deaId, startDate)
 
 	assert.Equal(t, 1, len(preparedPackages1))
 	assert.Equal(t, 10, preparedPackages1[0].quantity)
@@ -38,7 +38,7 @@ func TestDistributor_PreparePackages(t *testing.T) {
 	myDist1.addPackages(preparedPackages1)
 	myDist2.addPackages(preparedPackages2)
 
-	preparedPackages3 := myDist1.preparePackages(15, myDist2.deaID, startDate)
+	preparedPackages3 := myDist1.preparePackages(15, myDist2.deaId, startDate)
 	myDist2.addPackages(preparedPackages3)
 
 }

@@ -43,7 +43,7 @@ func (s *SupplySystem) ShipStock(t Transaction) error {
 	sendingDistributor := s.GetDistributor(t.sendingId, t.sendingAct)
 	receivingDistributor := s.GetDistributor(t.receivingId, t.receivingAct)
 
-	packages := sendingDistributor.preparePackages(t.quantity, receivingDistributor.deaID, t.date)
+	packages := sendingDistributor.preparePackages(t.quantity, receivingDistributor.deaId, t.date)
 	receivingDistributor.addPackages(packages)
 	return nil
 }

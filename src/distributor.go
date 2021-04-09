@@ -7,13 +7,13 @@ import (
 
 type Distributor struct {
 	store        []*Package
-	deaID        string
+	deaId        string
 	deaAct       string
 	manufactured int
 }
 
 func NewDistributor(deaID string, deaAct string) *Distributor {
-	return &Distributor{deaID: deaID, deaAct: deaAct}
+	return &Distributor{deaId: deaID, deaAct: deaAct}
 }
 
 func (d *Distributor) addPackages(packs []*Package) {
@@ -41,7 +41,7 @@ func (d *Distributor) TotalStock() int {
 
 func (d *Distributor) manufacture(quantity int, customerId string, date time.Time) *Package {
 	d.manufactured += quantity
-	return NewPackage(quantity, d.deaID, customerId, date)
+	return NewPackage(quantity, d.deaId, customerId, date)
 }
 
 func (d *Distributor) preparePackages(requestedQuantity int, customerId string, packagedDate time.Time) []*Package {
@@ -73,6 +73,12 @@ func (d *Distributor) preparePackages(requestedQuantity int, customerId string, 
 
 func (d *Distributor) ExtractTraces(traceCount AggregateTrace) {
 	for _, pack := range d.store {
+
+	    finalNode := pack.trace[len(pack.trace)-1]
+	    if finalNode != d.deaId {
+	        panic(9)
+        }
+
 		traceKey := pack.trace.String()
 		traceCount[traceKey] += pack.quantity
 	}
