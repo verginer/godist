@@ -1,50 +1,24 @@
 package godist
 
 import (
-    "github.com/stretchr/testify/assert"
-    "testing"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
+var csvInfo = TransactionCSVInfo{
+	SendingId:    0,
+	SendingAct:   0,
+	ReceivingId:  1,
+	ReceivingAct: 1,
+	Date:         3,
+	Quantity:     2,
+	DateFormat:   "01022006",
+	Separator:    ',',
+}
+
+var testDatPath = "./testdata/synth_transactions.tsv"
+
 func TestReplay(t *testing.T) {
-
-	//csvInfo := TransactionCSVInfo{
-	//	SendingId:    0,
-	//	SendingAct:   0,
-	//	ReceivingId:  1,
-	//	ReceivingAct: 1,
-	//	Date:         3,
-	//	Quantity:     2,
-	//	DateFormat:   "01022006",
-	//	Separator: ',',
-	//}
-
-    //csvInfo := TransactionCSVInfo{
-    //   SendingId:    0,
-    //   SendingAct:   1,
-    //   ReceivingId:  2,
-    //   ReceivingAct: 3,
-    //   Date:         5,
-    //   Quantity:     4,
-    //   DateFormat:   "2006-01-02",
-    //}
-
-
-    csvInfo := TransactionCSVInfo{
-        SendingId:    0,
-        SendingAct:   1,
-        ReceivingId:  10,
-        ReceivingAct: 11,
-        Quantity:     24,
-        Date:         30,
-        DateFormat:   "01022006",
-        Separator:    '\t',
-    }
-
-
-    //testDatPath := "/Users/lucaverginer/Downloads/presorted_transactions_example.csv"
-	//testDatPath := "/Users/lucaverginer/Downloads/random_transactions.csv"
-    //testDatPath := "./testdata/synth_transactions.tsv"
-    testDatPath := "../input2/004091255"
 	opioidTransactions := LoadTransactionsFromCSV(testDatPath, csvInfo)
 
 	distSystem := NewSupplySystem()
@@ -55,5 +29,41 @@ func TestReplay(t *testing.T) {
 	traces := distSystem.ExtractTraces()
 	assert.Equal(t, distSystem.TotalManufactured(), traces.Sum())
 
-	traces.ToJson("../tmp/gotraces.json")
+	traces.ToJson("./testdata/synth-traces.json")
+}
+
+func ReplayDifferentSizes(transactions TransactionsCollection, nIterations int) {
+	distSystem := NewSupplySystem()
+	for i := 0; i < nIterations; i++ {
+		distSystem.ReplayTransactions(transactions)
+	}
+	distSystem.ExtractTraces()
+}
+
+func BenchmarkSupplySystem_ReplayTransactions1(b *testing.B) {
+	opioidTransactions := LoadTransactionsFromCSV(testDatPath, csvInfo)
+	for i := 0; i < b.N; i++ {
+		ReplayDifferentSizes(opioidTransactions, 1)
+	}
+}
+
+func BenchmarkSupplySystem_ReplayTransactions10(b *testing.B) {
+	opioidTransactions := LoadTransactionsFromCSV(testDatPath, csvInfo)
+	for i := 0; i < b.N; i++ {
+		ReplayDifferentSizes(opioidTransactions, 10)
+	}
+}
+
+func BenchmarkSupplySystem_ReplayTransactions100(b *testing.B) {
+	opioidTransactions := LoadTransactionsFromCSV(testDatPath, csvInfo)
+	for i := 0; i < b.N; i++ {
+		ReplayDifferentSizes(opioidTransactions, 100)
+	}
+}
+
+func BenchmarkSupplySystem_ReplayTransactions1000(b *testing.B) {
+	opioidTransactions := LoadTransactionsFromCSV(testDatPath, csvInfo)
+	for i := 0; i < b.N; i++ {
+		ReplayDifferentSizes(opioidTransactions, 1000)
+	}
 }

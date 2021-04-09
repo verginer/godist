@@ -5,18 +5,9 @@ import (
 	"io"
 	"log"
 	"os"
-	"time"
 )
 
-
 // NewTransactionDate returns a time.Time object created from a string
-func NewTransactionDate(date, dateFormat string) time.Time {
-	t, err := time.Parse(dateFormat, date)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return t
-}
 
 // lineCounter Counts the lines a the given file source:
 // https://stackoverflow.com/questions/24562942/golang-how-do-i-determine-the-number-of-lines-in-a-file-efficiently

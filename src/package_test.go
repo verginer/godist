@@ -2,11 +2,9 @@ package godist
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
-import "github.com/stretchr/testify/assert"
-
-
 
 func CreatePackageWithTrace(depth int) *Package {
 	startDate := NewTransactionDate("01012012", DateFormat)
@@ -26,7 +24,6 @@ func TestPackage_Take(t *testing.T) {
 	var myPack = NewPackage(30, "M1", "D0", startDate)
 	takenPackage, complete := myPack.Take(15, "D1", startDate)
 	assert.Equal(t, complete, true)
-	assert.Equal(t, takenPackage.Quantity(), myPack.Quantity())
 	takenPackage, complete = myPack.Take(30, "D2", startDate)
 	assert.Equal(t, complete, false)
 	assert.Equal(t, 15, takenPackage.quantity)

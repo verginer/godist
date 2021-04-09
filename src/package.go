@@ -6,20 +6,6 @@ import (
 	"time"
 )
 
-// PackageTrace represents the sequence of locations the package has passed through
-type PackageTrace []string
-
-func (t PackageTrace) String() string {
-	return strings.Join(t, "|")
-}
-
-func (t PackageTrace) Extend(nextID string) PackageTrace {
-    newSequence := make(PackageTrace, len(t), len(t)+1)
-    copy(newSequence, t)
-	newSequence = append(newSequence, nextID)
-	return newSequence
-}
-
 // Package is the container which is used to transport the pills
 type Package struct {
 	quantity         int
@@ -42,7 +28,13 @@ func NewPackage(quantity int, deaId string, customerId string, date time.Time) *
 	}
 }
 
+// DerivePackage creates and returns a new package taking setting the parent
+// equal to the package it has take package the content has been taken from. Note
+// if parent is nil it will panic. In this case you should use NewPackage
 func DerivePackage(quantity int, parent *Package, destinationDeaID string, date time.Time) *Package {
+	if parent == nil {
+		panic(1)
+	}
 	trace := parent.trace.Extend(destinationDeaID)
 	return &Package{
 		quantity:         quantity,
@@ -54,24 +46,15 @@ func DerivePackage(quantity int, parent *Package, destinationDeaID string, date 
 	}
 }
 
-// Quantity gets the read only Quantity value
-func (p *Package) Quantity() int {
-	return p.quantity
-}
-
-// SetQuantity sets the Quantity to the given value
-func (p *Package) SetQuantity(newQuantity int) {
-	p.quantity = newQuantity
-}
-
-// Take creates a new package with the given Quantity if available
-// the residual Quantity otherwise.
-// Trying to take a package from a depleted package will result in a panic
+// Take creates a new package with the given quantity if available
+// the residual quantity otherwise.
+// Trying to taking something from a depleted package will result in a panic.
+// If the demanded quantity cannot be satisfied take will return false and true otherwise.
 func (p *Package) Take(quantity int, destinationDea string, date time.Time) (*Package, bool) {
 	var takenQuantity int
 	var satisfied bool
 
-	if p.depleted || ( p.quantity < 0) {
+	if p.depleted || (p.quantity < 0) {
 		panic(1)
 	}
 
@@ -109,4 +92,20 @@ func (p *Package) iterativeAncestors(children []*Package) []*Package {
 func (p *Package) String() string {
 	repr := fmt.Sprintf("P(%s, q=%d)", p.trace, p.quantity)
 	return repr
+}
+
+// Traces
+
+// PackageTrace represents the sequence of locations the package has passed through
+type PackageTrace []string
+
+func (t PackageTrace) String() string {
+	return strings.Join(t, "|")
+}
+
+func (t PackageTrace) Extend(nextID string) PackageTrace {
+	newSequence := make(PackageTrace, len(t), len(t)+1)
+	copy(newSequence, t)
+	newSequence = append(newSequence, nextID)
+	return newSequence
 }

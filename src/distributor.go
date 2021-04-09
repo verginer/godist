@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+//
 type Distributor struct {
 	store        []*Package
 	deaId        string
@@ -16,11 +17,13 @@ func NewDistributor(deaID string, deaAct string) *Distributor {
 	return &Distributor{deaId: deaID, deaAct: deaAct}
 }
 
-func (d *Distributor) addPackages(packs []*Package) {
+// AddPackages appends the packages to the end of the store
+func (d *Distributor) AddPackages(packs []*Package) {
 	d.store = append(d.store, packs...)
 }
 
-func (d *Distributor) removeDepletedPackages() {
+// RemoveDepletedPackages removes the packages from the store if depleted==true
+func (d *Distributor) RemoveDepletedPackages() {
 	var newStore []*Package
 
 	for _, pack := range d.store {
@@ -31,20 +34,8 @@ func (d *Distributor) removeDepletedPackages() {
 	d.store = newStore
 }
 
-func (d *Distributor) TotalStock() int {
-	var total int
-	for _, pack := range d.store {
-		total += pack.quantity
-	}
-	return total
-}
-
-func (d *Distributor) manufacture(quantity int, customerId string, date time.Time) *Package {
-	d.manufactured += quantity
-	return NewPackage(quantity, d.deaId, customerId, date)
-}
-
-func (d *Distributor) preparePackages(requestedQuantity int, customerId string, packagedDate time.Time) []*Package {
+// PreparePackages returns a list of packages that satisfy the quantity from the earliest to the newest.
+func (d *Distributor) PreparePackages(requestedQuantity int, customerId string, packagedDate time.Time) []*Package {
 	var packages []*Package
 	residualDemand := requestedQuantity
 	for _, pack := range d.store {
@@ -61,33 +52,39 @@ func (d *Distributor) preparePackages(requestedQuantity int, customerId string, 
 
 	// if there is still residual demand manufacture it
 	if residualDemand > 0 {
-		finalPackage := d.manufacture(residualDemand, customerId, packagedDate)
+		finalPackage := d.Manufacture(residualDemand, customerId, packagedDate)
 		packages = append(packages, finalPackage)
 	}
 
 	// Clean up depleted packages
-	d.removeDepletedPackages()
-
+	d.RemoveDepletedPackages()
 	return packages
 }
 
+// Manufacture creates a pristine package with trace set to his deaId and the customerId
+func (d *Distributor) Manufacture(quantity int, customerId string, date time.Time) *Package {
+	d.manufactured += quantity
+	return NewPackage(quantity, d.deaId, customerId, date)
+}
+
+// ExtractTraces will return the aggregated traces counting the quantity flowing on it.
 func (d *Distributor) ExtractTraces(traceCount AggregateTrace) {
 	for _, pack := range d.store {
 
-	    finalNode := pack.trace[len(pack.trace)-1]
-	    if finalNode != d.deaId {
-	        panic(9)
-        }
+		finalNode := pack.trace[len(pack.trace)-1]
+		if finalNode != d.deaId {
+			panic(1)
+		}
 
 		traceKey := pack.trace.String()
 		traceCount[traceKey] += pack.quantity
 	}
 }
 
-
-func (d *Distributor) ExtractAncestorTraces(traceCount AggregateTrace) {
-    for _, pack := range d.store {
-        traceKey := pack.trace.String()
-        traceCount[traceKey] += pack.quantity
-    }
+func (d *Distributor) TotalStock() int {
+	var total int
+	for _, pack := range d.store {
+		total += pack.quantity
+	}
+	return total
 }
