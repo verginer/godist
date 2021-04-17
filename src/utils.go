@@ -7,7 +7,12 @@ import (
 	"os"
 )
 
-// NewTransactionDate returns a time.Time object created from a string
+func LogFatalOnError(err error){
+    if err != nil {
+        log.Fatal(err)
+    }
+}
+
 
 // lineCounter Counts the lines a the given file source:
 // https://stackoverflow.com/questions/24562942/golang-how-do-i-determine-the-number-of-lines-in-a-file-efficiently

@@ -1,10 +1,10 @@
 package main
 
 import (
-	godist "github.com/verginer/godist/src"
-	"log"
-	"os"
-	"path/filepath"
+    godist "github.com/verginer/godist/src"
+    "log"
+    "os"
+    "path/filepath"
 )
 
 func worker(pathToTransactions, pathToJson string) {
@@ -24,9 +24,7 @@ func worker(pathToTransactions, pathToJson string) {
 
 	supplySystem := godist.NewSupplySystem()
 	err := supplySystem.ReplayTransactions(transactions)
-	if err != nil {
-		log.Fatal(err)
-	}
+	godist.LogFatalOnError(err)
 
 	totalInStock := supplySystem.TotalInStock()
 	totalManufactured := supplySystem.TotalManufactured()
@@ -47,9 +45,7 @@ func main() {
 
 	ndcFiles, err := os.ReadDir(ndcDirectory)
 
-	if err != nil {
-		log.Fatal(err)
-	}
+	godist.LogFatalOnError(err)
 
 	for _, ndcFile := range ndcFiles {
 		drugName := ndcFile.Name()
@@ -58,5 +54,4 @@ func main() {
 
 		worker(ndcPath, jsonPath)
 	}
-
 }

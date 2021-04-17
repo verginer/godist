@@ -24,7 +24,7 @@ func (d *Distributor) AddPackages(packs []*Package) {
 
 // RemoveDepletedPackages removes the packages from the store if depleted==true
 func (d *Distributor) RemoveDepletedPackages() {
-	var newStore []*Package
+	var newStore = make([]*Package, 0, 128)
 
 	for _, pack := range d.store {
 		if !pack.depleted {

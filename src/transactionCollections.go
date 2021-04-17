@@ -15,10 +15,15 @@ type Transaction struct {
 
 type TransactionsCollection []Transaction
 
+
 // Implement the interface to use sort.Sort
 func (t TransactionsCollection) Len() int {
 	return len(t)
 }
+
+//func (t TransactionsCollection) Less(i, j int) bool {
+//    return t[i].date.Before(t[j].date)
+//}
 
 func (t TransactionsCollection) Less(i, j int) bool {
 	if t[i].date.Before(t[j].date) {
